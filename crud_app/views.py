@@ -2,7 +2,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import crud
 from django.contrib import messages
 from django.contrib.auth.models import User,auth
+
 # Create your views here.
+
+
 
 def signup(request):
     if request.method=='POST':
@@ -13,9 +16,13 @@ def signup(request):
         if password1 != password2:
             messages.error(request, "Passwords do not match")
             return redirect('signup')
-
+    
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists")
+            return redirect('signup')
+        
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "e-mail already exists")
             return redirect('signup')
             
         user= User.objects.create_user(username=username,email=email,password=password1)
@@ -36,6 +43,7 @@ def login(request):
             auth.login(request,user)
             return redirect('add')
         else:
+            messages.error(request, "invalid username and password")
             return render(request,'login.html')
     return render(request,'login.html')
 
